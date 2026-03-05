@@ -39,7 +39,7 @@ B = {
 U = {"lui":"0110111","auipc":"0010111"}
 J = {"jal":"1101111"}
 
-#utlity 
+# Utlity 
 def binN(val,bits):
   if val<0:
     val=(1<<bits) + val
@@ -62,7 +62,7 @@ def tokens(line):
   line=line.replace(","," ").replace("("," ").replace(")"," ")
   return line.split()
 
-#1st pass (collect labels)
+# 1st pass (collect labels)
 def collect_labels(lines):
   labels={}
   pc=0
@@ -82,5 +82,24 @@ def collect_labels(lines):
     else:
       pc+=4
   return labels
-  
+
+# Virtual Halt Check
+def check_halt(lines):
+  last = None
+
+  for line in lines:
+    line = clean(line)
+    if not line:
+      continue
+    if ":" in line:
+      line = line.split(":",1)[1].strip()
+    if not line:
+      continue
+    last = tokens(line)
+
+  if last!=["beq","zero","zero","0"]:
+    print("Error: Missing virtual halt")
+    return False
+
+  return True
   
