@@ -38,3 +38,49 @@ B = {
 }
 U = {"lui":"0110111","auipc":"0010111"}
 J = {"jal":"1101111"}
+
+#utlity 
+def binN(val,bits):
+  if val<0:
+    val=(1<<bits) + val
+  return bin(val)[2:].zfill(bits)
+
+def parse_int(x):
+  try:
+    return int(x,0)
+  except:
+    return None
+
+def clean(line):
+  if '#' in line:
+    line=line[:line.index("#")]
+  if '//' in line:
+    line=line[:line.index('//')]
+  return line.strip()
+
+def tokens(line):
+  line=line.replace(","," ").replace("("," ").replace(")"," ")
+  return line.split()
+
+#1st pass (collect labels)
+def collect_labels(lines):
+  labels={}
+  pc=0
+  for line in lines:
+    line=clean(line)
+    if not line:
+      continue
+    if ':' in line:
+      label,rest=line.split(":",1)
+      label=label.strip()
+      if label in labels:
+        print("Error: Duplicate Label",label)
+        return None
+      labels[label]=pc
+      if rest.strip():
+        pc+=4
+    else:
+      pc+=4
+  return labels
+  
+  
