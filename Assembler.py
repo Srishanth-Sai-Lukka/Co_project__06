@@ -102,4 +102,44 @@ def check_halt(lines):
     return False
 
   return True
-  
+
+# Main Assembler
+def assemble(inp,outp):
+  with open(inp) as f:
+    lines = f.readlines()
+
+  if not check_halt(lines):
+    return
+
+  labels = collect_labels(lines)
+
+  if labels is None:
+    return
+
+  pc = 0
+  out = []
+
+  for ln,line in enumerate(lines,1):
+    line = clean(line)
+
+    if not line:
+      continue
+    if ":" in line:
+      line = line.split(":",1)[1].strip()
+    if not line:
+      continue
+
+    p = tokens(line)
+    op = p[0]
+
+    try:
+      # R type:
+      if op in R:
+        rd, rs1, rs2 = p[1], p[2], p[3]
+        f7, f3, opc = R[op]
+        code = f7 + REG[rs2] + REG[rs1] + f3 + REG[rd] + opc
+        
+    except:
+      print("Error at line", ln)
+      return
+      
