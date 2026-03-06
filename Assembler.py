@@ -39,7 +39,7 @@ B = {
 U = {"lui":"0110111","auipc":"0010111"}
 J = {"jal":"1101111"}
 
-# Utlity 
+# Utility 
 def binN(val,bits):
   if val<0:
     val=(1<<bits) + val
@@ -185,16 +185,18 @@ def assemble(inp,outp):
     else: 
       print("Error at", ln,": Invalid instruction")
       return
-  except:
-    print("Error at line",ln)
-    return
-  out.append(code)
-  pc+=4
-with open(outp,"w") as f:
-  for x in put:
-    f.write(x+ "\n")
-
-
-
-
+    except:
+      print("Error at line",ln)
+      return
+    out.append(code)
+    pc+=4
+  with open(outp,"w") as f:
+    for x in put:
+      f.write(x+ "\n")
+      
+if __name__ = "__main__":
+  if len(sys.argv)! = 3:
+    print("Usuage: python assmbler.py input.asm output.bin")
+  else:
+    assemble(sys.argv[1],sysargv[2])  
       
