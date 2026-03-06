@@ -133,13 +133,68 @@ def assemble(inp,outp):
     op = p[0]
 
     try:
-      # R type:
+    # R type:
       if op in R:
         rd, rs1, rs2 = p[1], p[2], p[3]
         f7, f3, opc = R[op]
         code = f7 + REG[rs2] + REG[rs1] + f3 + REG[rd] + opc
         
-    except:
-      print("Error at line", ln)
+    #I type:
+    elif op in I and op!:
+      rd, rs1, imm = p[1], p[2], parse_int(p[3])
+      f3, opc= I[op]
+      code = binN(imm,12) +REG[rs1] +f3 +REG[rd] +opc
+    elif op=="Iw":
+      rd, imm ,rs1 = p[1], parse_int(p[2]),p[3]
+      f3 , opc = I["Iw"]
+      code = binN(imm,12)+REG[rs1] +f3+ REG[rd] +opc
+  
+    #S type:
+    elif op in S:
+      rs2, imm, rs1 = p[1], parse_int(p[2]),p[3]
+      f3, opc = S[op]
+      imm = binN(imm,12)
+      code = imm[:7]+ REG[rs2]+ REG[rs1]+ f3+ imm[:7]+ opc
+
+
+    elif op in B:
+      rs1,rs2,target = p[1],p[2],p[3]
+      if target in labels:
+        off = labels[target]-pc
+      else:
+        off = parse_int(target)
+      f3, opc = B[op]
+      imm = binN(off,13)
+      code = imm[0]+ im[2:8]+ REG[rs2]+ REG[rs1]+f3+imm[8:12]+ imm[1]+ opc
+
+    elif op in U:
+      rd, imm = p[1],parse_int(p[2])
+      opc = U[op]
+      code = binN(imm,20)+REG[rd]+opc
+
+    elif op in J:
+      rd, target = p[1].p[2]
+      if target in labels:
+        off = labels[target]-pc
+      else:
+        off = parse_int(target)
+        opc= J[op]
+        imm = binN(off,21)
+        code = imm[0]+imm[10:20]+imm[9]+imm[1:9]+REG[rd]+opc
+
+    else: 
+      print("Error at", ln,": Invalid instruction")
       return
+  except:
+    print("Error at line",ln)
+    return
+  out.append(code)
+  pc+=4
+with open(outp,"w") as f:
+  for x in put:
+    f.write(x+ "\n")
+
+
+
+
       
