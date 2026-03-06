@@ -208,7 +208,7 @@ def assemble(inp,outp):
 if __name__ == "__main__":
   
   if len(sys.argv) != 3:
-    print("Usuage: python assmbler.py input.asm output.bin")
+    print("Usage: python assmbler.py input.asm output.bin")
   else:
     assemble(sys.argv[1],sys.argv[2])  
       
