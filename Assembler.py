@@ -168,7 +168,7 @@ def assemble(inp,outp):
           
         f3, opc = B[op]
         imm = binN(off,13)
-        code = imm[0] + im[2:8] + REG[rs2] + REG[rs1] + f3 + imm[8:12] + imm[1] + opc
+        code = imm[0] + imm[2:8] + REG[rs2] + REG[rs1] + f3 + imm[8:12] + imm[1] + opc
         
       # U type:
       elif op in U:
