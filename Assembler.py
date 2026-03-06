@@ -156,7 +156,7 @@ def assemble(inp,outp):
       imm = binN(imm,12)
       code = imm[:7]+ REG[rs2]+ REG[rs1]+ f3+ imm[:7]+ opc
 
-
+    #Extra branch
     elif op in B:
       rs1,rs2,target = p[1],p[2],p[3]
       if target in labels:
@@ -166,12 +166,12 @@ def assemble(inp,outp):
       f3, opc = B[op]
       imm = binN(off,13)
       code = imm[0]+ im[2:8]+ REG[rs2]+ REG[rs1]+f3+imm[8:12]+ imm[1]+ opc
-
+    #U type:
     elif op in U:
       rd, imm = p[1],parse_int(p[2])
       opc = U[op]
       code = binN(imm,20)+REG[rd]+opc
-
+    # J type:
     elif op in J:
       rd, target = p[1].p[2]
       if target in labels:
@@ -193,7 +193,7 @@ def assemble(inp,outp):
   with open(outp,"w") as f:
     for x in put:
       f.write(x+ "\n")
-      
+#Terminal/Command line Interface   
 if __name__ = "__main__":
   if len(sys.argv)! = 3:
     print("Usuage: python assmbler.py input.asm output.bin")
