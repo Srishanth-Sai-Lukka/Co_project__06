@@ -165,9 +165,11 @@ def assemble(inp,outp):
           off = labels[target] - pc
         else:
           off = parse_int(target)
-          
-        f3, opc = B[op]
+
+        off = off >> 1
         imm = binN(off,13)
+
+        f3, opc = B[op]
         code = imm[0] + imm[2:8] + REG[rs2] + REG[rs1] + f3 + imm[8:12] + imm[1] + opc
         
       # U type:
@@ -184,9 +186,11 @@ def assemble(inp,outp):
           off = labels[target] - pc
         else:
           off = parse_int(target)
-          
-        opc = J[op]
+
+        off = off >> 1
         imm = binN(off,21)
+        
+        opc = J[op]
         code = imm[0] + imm[10:20] + imm[9] + imm[1:9] + REG[rd] + opc
 
       else: 
