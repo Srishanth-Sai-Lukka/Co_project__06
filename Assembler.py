@@ -43,7 +43,7 @@ J = {"jal":"1101111"}
 # Helper Functions
 def binN(val,bits):
   if val<0:
-    val=(1<<bits) + val
+    val = (1<<bits) + val
   return bin(val)[2:].zfill(bits)
 
 def parse_int(x):
@@ -85,13 +85,13 @@ def check_ops(p,count,ln):
 # Helper Functions
 def clean(line):
   if '#' in line:
-    line=line[:line.index("#")]
+    line = line[:line.index("#")]
   if '//' in line:
-    line=line[:line.index('//')]
+    line = line[:line.index('//')]
   return line.strip()
 
 def tokens(line):
-  line=line.replace(","," ").replace("("," ").replace(")"," ")
+  line = line.replace(","," ").replace("("," ").replace(")"," ")
   return line.split()
 
 def collect_labels(lines):
@@ -147,6 +147,7 @@ def check_halt(lines):
         return False
 
     return True
+  
 # Main Assembler
 def assemble(inp,outp):
   try:
@@ -172,7 +173,7 @@ def assemble(inp,outp):
 
     if not line:
       continue
-    line=remove_label(line)
+    line = remove_label(line)
   
     if not line:
       continue
@@ -183,57 +184,31 @@ def assemble(inp,outp):
     try:
       # R type:
       if op in R:
-        if not check_ops(p,4,ln):
-          return
         rd, rs1, rs2 = p[1], p[2], p[3]
-        if not(check_reg(rd,ln) and check_reg(rs1,ln) and check_reg(rs2,ln)):
-          return
         f7, f3, opc = R[op]
         code = f7 + REG[rs2] + REG[rs1] + f3 + REG[rd] + opc
         
       # I type:
       elif op in I and op != "lw":
-        if not check_ops(p,4,ln):
-          return
         rd, rs1, imm = p[1], p[2], parse_int(p[3])
-        if not(check_reg(rd,ln) and check_reg(rs1,ln)):
-          return
-        if not check_imm(imm,12,ln):
-          return
         f3, opc = I[op]
         code = binN(imm,12) + REG[rs1] + f3 + REG[rd] + opc
         
       elif op == "lw":
-        if not check_ops(p,4,ln):
-          return
         rd, imm, rs1 = p[1], parse_int(p[2]),p[3]
-        if not(check_reg(rd,ln) and check_reg(rs1,ln)):
-          return
-        if not check_imm(imm,12,ln):
-          return
         f3, opc = I["lw"]
         code = binN(imm,12) + REG[rs1] + f3 + REG[rd] + opc
     
       # S type:
       elif op in S:
-        if not check_ops(p,4,ln):
-          return
         rs2,imm,rs1 = p[1], parse_int(p[2]),p[3]
-        if not(check_reg(rs2,ln) and check_reg(rs1,ln)):
-          return
-        if not check_imm(imm,12,ln):
-          return
         f3, opc = S[op]
         imm = binN(imm,12)
         code = imm[:7] + REG[rs2] + REG[rs1] + f3 + imm[7:] + opc
 
       # B type:
       elif op in B:
-        if not check_ops(p,4,ln):
-          return
         rs1, rs2, target = p[1], p[2], p[3]
-        if not(check_reg(rs1,ln) and check_reg(rs2,ln)):
-          return
         
         if target in labels:
           off = labels[target] - pc
@@ -242,9 +217,13 @@ def assemble(inp,outp):
           if off is None:
             print("Error at line",ln,": Undefined label",target)
             return
-        off = off >> 1
-        if not check_imm(off,13,ln):
-          return
+            
+          if off % 2 != 0:
+            print("Error at line",ln,": Misaligned branch offset")
+            return
+
+          if not check_imm(off,13,ln): 
+            return
             
         imm = binN(off,13)
         f3, opc = B[op]
@@ -252,23 +231,13 @@ def assemble(inp,outp):
         
       # U type:
       elif op in U:
-        if not check_ops(p,3,ln):
-          return
         rd, imm = p[1], parse_int(p[2])
-        if not check_reg(rd,ln):
-          return
-        if not check_imm(imm,20,ln):
-          return
         opc = U[op]
         code = binN(imm,20) + REG[rd] + opc
         
       # J type:
       elif op in J:
-        if not check_ops(p,3,ln):
-          return
         rd, target = p[1], p[2]
-        if not check_reg(rd,ln):
-          return
         
         if target in labels:
           off = labels[target] - pc
@@ -277,9 +246,13 @@ def assemble(inp,outp):
           if off is None:
             print("Error at line",ln,": Undefined label",target)
             return
-        off = off >> 1
-        if not check_imm(off,21,ln):
-          return
+            
+          if off % 2 != 0:
+            print("Error at line",ln,": Misaligned jump offset")
+            return
+
+          if not check_imm(off,21,ln): 
+            return
             
         imm = binN(off,21)
         opc = J[op]
