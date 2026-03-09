@@ -183,12 +183,22 @@ def assemble(inp,outp):
         
       # I type:
       elif op in I and op != "lw":
+        if not check_ops(p,4,ln):
+          return
         rd, rs1, imm = p[1], p[2], parse_int(p[3])
+        if not(check_reg(rd,ln) and check_reg(rs1,ln)):
+          return
         f3, opc = I[op]
         code = binN(imm,12) + REG[rs1] + f3 + REG[rd] + opc
         
       elif op == "lw":
+        if not check_ops(p,4,ln):
+          return
         rd, imm, rs1 = p[1], parse_int(p[2]),p[3]
+        if not(check_reg(rd,ln) and check_reg(rs1,ln)):
+          return
+        if not check_imm(imm,12,ln):
+          return
         f3, opc = I["lw"]
         code = binN(imm,12) + REG[rs1] + f3 + REG[rd] + opc
     
