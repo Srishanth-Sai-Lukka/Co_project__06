@@ -127,27 +127,26 @@ def collect_labels(lines):
 
 # Virtual Halt Check
 def check_halt(lines):
-  last=None
+    last = None
 
-  for line in lines:
-    line=clean(line)
-    if not line:
-      continue
-    line=remove_label(line)
-    if not line:
-      continue
-    last = tokens(line)
-    
-    if not last:
-      print("Error:program empty")
-      return False
+    for line in lines:
+        line = clean(line)
+        if not line:
+            continue
+        line = remove_label(line)
+        if not line:
+            continue
+        last = tokens(line)
 
-  if not (len(last) == 4 and last[0] == "beq" and last[1] == "zero" and last[2] == "zero" and parse_int(last[3])==0):
-    print("Error: Missing virtual halt")
-    return False
+    if last is None:
+        print("Error: program empty")
+        return False
 
-  return True
+    if not (len(last) == 4 and last[0] == "beq" and last[1] == "zero" and last[2] == "zero" and parse_int(last[3]) == 0):
+        print("Error: Missing virtual halt")
+        return False
 
+    return True
 # Main Assembler
 def assemble(inp,outp):
   try:
