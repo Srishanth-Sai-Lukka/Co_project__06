@@ -162,8 +162,8 @@ def assemble(inp,outp):
 
     if not line:
       continue
-    if ":" in line:
-      line = line.split(":",1)[1].strip()
+    line=remove_label(line)
+  
     if not line:
       continue
 
@@ -173,7 +173,11 @@ def assemble(inp,outp):
     try:
       # R type:
       if op in R:
+        if not check_ops(p,4,ln):
+          return
         rd, rs1, rs2 = p[1], p[2], p[3]
+        if not(check_reg(rd,ln) and check_reg(rs1,ln) and check_reg(rs2,ln)):
+          return
         f7, f3, opc = R[op]
         code = f7 + REG[rs2] + REG[rs1] + f3 + REG[rd] + opc
         
