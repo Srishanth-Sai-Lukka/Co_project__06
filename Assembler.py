@@ -116,17 +116,20 @@ def collect_labels(lines):
 
 # Virtual Halt Check
 def check_halt(lines):
-  last = None
+  last=None
 
   for line in lines:
-    line = clean(line)
+    line=clean(line)
     if not line:
       continue
-    if ":" in line:
-      line = line.split(":",1)[1].strip()
+    line=remove_label(line)
     if not line:
       continue
     last = tokens(line)
+    
+    if not last:
+      print("Error:program empty")
+      return False
 
   if not (len(last) == 4 and last[0] == "beq" and last[1] == "zero" and last[2] == "zero"):
     print("Error: Missing virtual halt")
