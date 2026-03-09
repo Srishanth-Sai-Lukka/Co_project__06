@@ -9,6 +9,7 @@ REG = {
 "s8":"11000","s9":"11001","s10":"11010","s11":"11011",
 "t3":"11100","t4":"11101","t5":"11110","t6":"11111"
 }
+
 # Instruction Tables
 R = {
 "add":("0000000","000","0110011"),
@@ -39,7 +40,7 @@ B = {
 U = {"lui":"0110111","auipc":"0010111"}
 J = {"jal":"1101111"}
 
-# Utility 
+# Helper Functions
 def binN(val,bits):
   if val<0:
     val=(1<<bits) + val
@@ -50,7 +51,8 @@ def parse_int(x):
     return int(x,0)
   except:
     return None
-    
+
+# Error Handling
 def check_imm(val,bits,ln):
   if val is None:
     print("Error at line",ln,": Invalid immediate")
@@ -74,6 +76,7 @@ def check_ops(p,count,ln):
     return False
   return True
 
+# Helper Functions
 def clean(line):
   if '#' in line:
     line=line[:line.index("#")]
@@ -85,7 +88,6 @@ def tokens(line):
   line=line.replace(","," ").replace("("," ").replace(")"," ")
   return line.split()
 
-# 1st pass (collect labels)
 def collect_labels(lines):
   labels={}
   pc=0
@@ -251,11 +253,10 @@ def assemble(inp,outp):
     for x in out:
       f.write(x + "\n")
 
-# Terminal/Command line Interface   
+# Calling Function 
 if __name__ == "__main__":
   
   if len(sys.argv) != 3:
     print("Usage: python3 assmbler.py input.asm output.bin")
   else:
-    assemble(sys.argv[1],sys.argv[2])  
-      
+    assemble(sys.argv[1],sys.argv[2])
