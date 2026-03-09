@@ -217,7 +217,11 @@ def assemble(inp,outp):
 
       # B type:
       elif op in B:
+        if not check_ops(p,4,ln):
+          return
         rs1, rs2, target = p[1], p[2], p[3]
+        if not(check_reg(rs1,ln) and check_reg(rs2,ln)):
+          return
         
         if target in labels:
           off = labels[target] - pc
