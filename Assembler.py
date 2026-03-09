@@ -279,7 +279,7 @@ def assemble(inp,outp):
             print("Error at line",ln,": Undefined label",target)
             return
         off = off >> 1
-        if not check_imm(off,20,ln):
+        if not check_imm(off,21,ln):
           return
             
         imm = binN(off,21)
