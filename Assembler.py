@@ -204,7 +204,13 @@ def assemble(inp,outp):
     
       # S type:
       elif op in S:
-        rs2, imm, rs1 = p[1], parse_int(p[2]),p[3]
+        if not check_ops(p,4,ln):
+          return
+        rs2,imm,rs1 = p[1], parse_int(p[2]),p[3]
+        if not(check_reg(rs2,ln) and check_reg(rs1,ln)):
+          return
+        if not check_imm(imm,12,ln):
+          return
         f3, opc = S[op]
         imm = binN(imm,12)
         code = imm[:7] + REG[rs2] + REG[rs1] + f3 + imm[7:] + opc
