@@ -51,8 +51,7 @@ def parse_int(x):
     return int(x,0)
   except:
     return None
-    
-#helper for removing label
+
 def remove_label(line):
   if ':' in line:
     return line.split(':',1)[1].strip()
@@ -111,7 +110,7 @@ def collect_labels(lines):
                 print("Error at line", ln, ": Duplicate label", label)
                 return None
 
-            if not label[0].isalpha():
+            if not (label[0].isalpha() or label[0] == "_"):
                 print("Error at line", ln, ": Invalid label name", label)
                 return None
 
