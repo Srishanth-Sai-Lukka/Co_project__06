@@ -166,7 +166,7 @@ def assemble(inp,outp):
         else:
           off = parse_int(target)
 
-        off = off >> 1
+        
         imm = binN(off,13)
 
         f3, opc = B[op]
@@ -187,7 +187,7 @@ def assemble(inp,outp):
         else:
           off = parse_int(target)
 
-        off = off >> 1
+        
         imm = binN(off,21)
         
         opc = J[op]
