@@ -95,24 +95,39 @@ def tokens(line):
   return line.split()
 
 def collect_labels(lines):
-  labels={}
-  pc=0
-  for line in lines:
-    line=clean(line)
-    if not line:
-      continue
-    if ':' in line:
-      label,rest=line.split(":",1)
-      label=label.strip()
-      if label in labels:
-        print("Error: Duplicate Label",label)
-        return None
-      labels[label]=pc
-      if rest.strip():
-        pc+=4
-    else:
-      pc+=4
-  return labels
+    labels = {}
+    pc = 0
+
+    for ln, line in enumerate(lines, 1):
+        line = clean(line)
+
+        if not line:
+            continue
+
+        if ':' in line:
+            label, rest = line.split(":", 1)
+            label = label.strip()
+
+            # check duplicate label
+            if label in labels:
+                print("Error at line", ln, ": Duplicate label", label)
+                return None
+
+            # check label starts with alphabet
+            if not label[0].isalpha():
+                print("Error at line", ln, ": Invalid label name", label)
+                return None
+
+            labels[label] = pc
+
+            # if instruction exists after label
+            if rest.strip():
+                pc += 4
+
+        else:
+            pc += 4
+
+    return labels
 
 # Virtual Halt Check
 def check_halt(lines):
