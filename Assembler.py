@@ -256,7 +256,11 @@ def assemble(inp,outp):
         
       # J type:
       elif op in J:
+        if not check_ops(p,3,ln):
+          return
         rd, target = p[1], p[2]
+        if not check_reg(rd,ln):
+          return
         
         if target in labels:
           off = labels[target] - pc
