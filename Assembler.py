@@ -40,7 +40,7 @@ B = {
 U = {"lui":"0110111","auipc":"0010111"}
 J = {"jal":"1101111"}
 
-# Helper Functions
+# Helper Functions and Error handling
 def binN(val,bits):
   if val<0:
     val = (1<<bits) + val
@@ -57,7 +57,6 @@ def remove_label(line):
     return line.split(':',1)[1].strip()
   return line
 
-# Error Handling
 def check_imm(val,bits,ln):
   if val is None:
     print("Error at line", ln,": Invalid immediate")
@@ -81,7 +80,6 @@ def check_ops(p,count,ln):
     return False
   return True
 
-# Helper Functions
 def clean(line):
   if '#' in line:
     line = line[:line.index("#")]
@@ -183,34 +181,28 @@ def assemble(inp,outp):
     op = p[0]
 
     try:
-      # R type:
       if op in R:
         rd, rs1, rs2 = p[1], p[2], p[3]
         f7, f3, opc = R[op]
         code = f7 + REG[rs2] + REG[rs1] + f3 + REG[rd] + opc
         
-      # I type:
       elif op in I and op != "lw":
         rd, rs1, imm = p[1], p[2], parse_int(p[3])
         f3, opc = I[op]
-        code = binN(imm,12) + REG[rs1] + f3 + REG[rd] + opc
-        
+        code = binN(imm,12) + REG[rs1] + f3 + REG[rd] + opc    
       elif op == "lw":
         rd, imm, rs1 = p[1], parse_int(p[2]),p[3]
         f3, opc = I["lw"]
         code = binN(imm,12) + REG[rs1] + f3 + REG[rd] + opc
     
-      # S type:
       elif op in S:
         rs2,imm,rs1 = p[1], parse_int(p[2]),p[3]
         f3, opc = S[op]
         imm = binN(imm,12)
         code = imm[:7] + REG[rs2] + REG[rs1] + f3 + imm[7:] + opc
 
-      # B type:
       elif op in B:
         rs1, rs2, target = p[1], p[2], p[3]
-        
         if target in labels:
           off = labels[target] - pc
         else:
@@ -224,22 +216,18 @@ def assemble(inp,outp):
             return
 
           if not check_imm(off,13,ln): 
-            return
-            
+            return  
         imm = binN(off,13)
         f3, opc = B[op]
         code = imm[0] + imm[2:8] + REG[rs2] + REG[rs1] + f3 + imm[8:12] + imm[1] + opc
         
-      # U type:
       elif op in U:
         rd, imm = p[1], parse_int(p[2])
         opc = U[op]
         code = binN(imm,20) + REG[rd] + opc
         
-      # J type:
       elif op in J:
         rd, target = p[1], p[2]
-        
         if target in labels:
           off = labels[target] - pc
         else:
