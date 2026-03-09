@@ -188,6 +188,8 @@ def assemble(inp,outp):
         rd, rs1, imm = p[1], p[2], parse_int(p[3])
         if not(check_reg(rd,ln) and check_reg(rs1,ln)):
           return
+        if not check_imm(imm,12,ln):
+          return
         f3, opc = I[op]
         code = binN(imm,12) + REG[rs1] + f3 + REG[rd] + opc
         
@@ -230,13 +232,9 @@ def assemble(inp,outp):
           if off is None:
             print("Error at line",ln,": Undefined label",target)
             return
-
-          if off % 2 != 0:
-            print("Error at line",ln,": Misaligned branch offset")
-            return
-
-          if not check_imm(off,13,ln): 
-            return
+        off = off >> 1
+        if not check_imm(off,12,ln):
+          return
             
         imm = binN(off,13)
         f3, opc = B[op]
@@ -269,13 +267,9 @@ def assemble(inp,outp):
           if off is None:
             print("Error at line",ln,": Undefined label",target)
             return
-
-          if off % 2 != 0:
-            print("Error at line",ln,": Misaligned jump offset")
-            return
-
-          if not check_imm(off,21,ln): 
-            return
+        off = off >> 1
+        if not check_imm(off,20,ln):
+          return
             
         imm = binN(off,21)
         opc = J[op]
