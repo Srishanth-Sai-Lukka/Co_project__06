@@ -50,6 +50,29 @@ def parse_int(x):
     return int(x,0)
   except:
     return None
+    
+def check_imm(val,bits,ln):
+  if val is None:
+    print("Error at line",ln,": Invalid immediate")
+    return False
+  low = -(1<<(bits-1))
+  high = (1<<(bits-1)) - 1
+  if val < low or val > high:
+    print("Error at line",ln,": Immediate out of range")
+    return False
+  return True
+
+def check_reg(r,ln):
+  if r not in REG:
+    print("Error at line",ln,": Unknown register",r)
+    return False
+  return True
+
+def check_ops(p,count,ln):
+  if len(p) != count:
+    print("Error at line",ln,": Wrong operand count")
+    return False
+  return True
 
 def clean(line):
   if '#' in line:
