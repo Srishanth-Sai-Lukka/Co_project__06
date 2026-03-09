@@ -61,12 +61,12 @@ def remove_label(line):
 # Error Handling
 def check_imm(val,bits,ln):
   if val is None:
-    print("Error at line",ln,": Invalid immediate")
+    print("Error at line", ln,": Invalid immediate")
     return False
   low = -(1<<(bits-1))
   high = (1<<(bits-1)) - 1
   if val < low or val > high:
-    print("Error at line",ln,": Immediate out of range")
+    print("Error at line", ln,": Immediate out of range")
     return False
   return True
 
