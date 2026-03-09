@@ -244,7 +244,13 @@ def assemble(inp,outp):
         
       # U type:
       elif op in U:
+        if not check_ops(p,3,ln):
+          return
         rd, imm = p[1], parse_int(p[2])
+        if not check_reg(rd,ln):
+          return
+        if not check_imm(imm,20,ln):
+          return
         opc = U[op]
         code = binN(imm,20) + REG[rd] + opc
         
