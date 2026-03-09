@@ -128,8 +128,12 @@ def check_halt(lines):
 
 # Main Assembler
 def assemble(inp,outp):
-  with open(inp) as f:
-    lines = f.readlines()
+  try:
+    with open(inp) as f:
+      lines = f.readlines()
+  except FileNotFoundError:
+    print("Error: Input file not found")
+    return
 
   if not check_halt(lines):
     return
