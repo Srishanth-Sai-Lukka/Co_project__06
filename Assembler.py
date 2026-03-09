@@ -103,24 +103,20 @@ def collect_labels(lines):
 
         if not line:
             continue
-
         if ':' in line:
             label, rest = line.split(":", 1)
             label = label.strip()
 
-            # check duplicate label
             if label in labels:
                 print("Error at line", ln, ": Duplicate label", label)
                 return None
 
-            # check label starts with alphabet
             if not label[0].isalpha():
                 print("Error at line", ln, ": Invalid label name", label)
                 return None
 
             labels[label] = pc
 
-            # if instruction exists after label
             if rest.strip():
                 pc += 4
 
