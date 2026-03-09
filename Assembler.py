@@ -131,7 +131,7 @@ def check_halt(lines):
       print("Error:program empty")
       return False
 
-  if not (len(last) == 4 and last[0] == "beq" and last[1] == "zero" and last[2] == "zero"):
+  if not (len(last) == 4 and last[0] == "beq" and last[1] == "zero" and last[2] == "zero" and parse_int(last[3])==0):
     print("Error: Missing virtual halt")
     return False
 
