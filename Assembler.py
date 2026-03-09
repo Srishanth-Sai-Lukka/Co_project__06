@@ -97,7 +97,7 @@ def check_halt(lines):
       continue
     last = tokens(line)
 
-  if last!=["beq","zero","zero","0"]:
+  if not (len(last) == 4 and last[0] == "beq" and last[1] == "zero" and last[2] == "zero"):
     print("Error: Missing virtual halt")
     return False
 
@@ -212,7 +212,7 @@ def assemble(inp,outp):
 if __name__ == "__main__":
   
   if len(sys.argv) != 3:
-    print("Usage: python assmbler.py input.asm output.bin")
+    print("Usage: python3 assmbler.py input.asm output.bin")
   else:
     assemble(sys.argv[1],sys.argv[2])  
       
