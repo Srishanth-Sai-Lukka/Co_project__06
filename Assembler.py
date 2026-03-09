@@ -51,6 +51,12 @@ def parse_int(x):
     return int(x,0)
   except:
     return None
+    
+#helper for removing label
+def remove_label(line):
+  if ':' in line:
+    return line.split(':',1)[1].strip()
+  return line
 
 # Error Handling
 def check_imm(val,bits,ln):
