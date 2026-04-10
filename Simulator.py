@@ -1,23 +1,16 @@
 import sys
 
-# =============================================================================
-# RISC-V Simulator 
-# =============================================================================
-
 DATA_MEM_BASE = 0x00010000
-DATA_MEM_SIZE = 32          # words
+DATA_MEM_SIZE = 32          
 STACK_BASE    = 0x00000100
-STACK_SIZE    = 32          # words
+STACK_SIZE    = 32          
 SP_INIT       = 0x0000017C
-HALT_ENCODING = 0x00000063  # beq x0, x0, 0
-
+HALT_ENCODING = 0x00000063  
 
 class Memory:
     """Flat word-addressed memory covering data segment and stack."""
 
     def __init__(self):
-        # data segment: indices 0..31
-        # stack segment: indices 32..63
         self._words = [0] * (DATA_MEM_SIZE + STACK_SIZE)
 
     def _resolve(self, byte_address):
@@ -43,29 +36,23 @@ class Memory:
             for i in range(DATA_MEM_SIZE)
         ]
 
-
 class RegisterFile:
     """32 RISC-V integer registers; x0 is always zero."""
 
     def __init__(self):
         self._r = [0] * 32
-        self._r[2] = SP_INIT   # sp
+        self._r[2] = SP_INIT   
 
     def read(self, index):
         return self._r[index]
 
     def write(self, index, value):
-        if index != 0:                      # x0 is hardwired to 0
+        if index != 0:                      
             self._r[index] = value & 0xFFFFFFFF
 
     def all_values(self):
         return list(self._r)
-
-
-# ---------------------------------------------------------------------------
-# Bit-manipulation helpers
-# ---------------------------------------------------------------------------
-
+        
 def bits(word, hi, lo):
     """Extract bits [hi:lo] inclusive from a 32-bit integer."""
     mask = (1 << (hi - lo + 1)) - 1
@@ -86,11 +73,6 @@ def as_signed(val):
 
 def as_unsigned(val):
     return val & 0xFFFFFFFF
-
-
-# ---------------------------------------------------------------------------
-# Field extraction (all bitwise, no string slicing)
-# ---------------------------------------------------------------------------
 
 def extract_fields(word):
     opcode = bits(word, 6,  0)
@@ -133,11 +115,6 @@ def extract_fields(word):
         "imm_i": imm_i, "imm_s": imm_s, "imm_b": imm_b,
         "imm_u": imm_u, "imm_j": imm_j,
     }
-
-
-# ---------------------------------------------------------------------------
-# CPU
-# ---------------------------------------------------------------------------
 
 class CPU:
 
@@ -183,20 +160,13 @@ class CPU:
             B(0b110, self._bltu),
             B(0b111, self._bgeu),
         ])
-
-        # opcodes that use funct7 for dispatch
+        
         self._use_funct7 = {0b0110011}
-
-        # special opcodes handled separately
         self._special = {
             0b0110111: self._lui,
             0b0010111: self._auipc,
             0b1101111: self._jal,
         }
-
-    # -----------------------------------------------------------------------
-    # Instruction handlers — each returns next_pc
-    # -----------------------------------------------------------------------
 
     def _add(self, f, pc):
         self.regs.write(f["rd"], as_unsigned(self.regs.read(f["rs1"]) + self.regs.read(f["rs2"])))
@@ -299,10 +269,6 @@ class CPU:
         self.regs.write(f["rd"], as_unsigned(pc + 4))
         return as_unsigned(pc + f["imm_j"]) & 0xFFFFFFFE
 
-    # -----------------------------------------------------------------------
-    # Step: decode one instruction word and execute it
-    # -----------------------------------------------------------------------
-
     def step(self, word):
         f = extract_fields(word)
         opcode = f["opcode"]
@@ -319,10 +285,6 @@ class CPU:
 
         return handler(f, self.pc)
 
-    # -----------------------------------------------------------------------
-    # Trace formatting
-    # -----------------------------------------------------------------------
-
     def format_state(self, pc_to_print):
         pc_str  = "0b" + format(pc_to_print & 0xFFFFFFFF, "032b")
         reg_str = " ".join("0b" + format(v & 0xFFFFFFFF, "032b") for v in self.regs.all_values())
@@ -334,12 +296,7 @@ class CPU:
             lines.append(f"0x{addr:08X}:0b{val & 0xFFFFFFFF:032b}")
         return lines
 
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-HALT_WORD = 0x00000063   # beq x0, x0, 0
+HALT_WORD = 0x00000063   
 
 
 def load_program(path):
@@ -348,7 +305,7 @@ def load_program(path):
         for line in f:
             line = line.strip()
             if line:
-                program.append(int(line, 2))   # binary string → int
+                program.append(int(line, 2))   
     return program
 
 
@@ -371,7 +328,6 @@ def main():
 
         word = program[idx]
 
-        # Virtual halt — record state at current PC and stop
         if word == HALT_WORD:
             trace_lines.append(cpu.format_state(cpu.pc))
             break
@@ -385,7 +341,6 @@ def main():
             out.write(line + "\n")
         for line in cpu.format_memory_dump():
             out.write(line + "\n")
-
 
 if __name__ == "__main__":
     main()
