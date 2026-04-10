@@ -157,11 +157,13 @@ def assemble(inp,outp):
     return
 
   if not check_halt(lines):
+    open(outp, "w").close()
     return
 
   labels = collect_labels(lines)
 
   if labels is None:
+    open(outp, "w").close()
     return
 
   pc = 0
@@ -264,8 +266,4 @@ def assemble(inp,outp):
 
 # Calling Function 
 if __name__ == "__main__":
-  
-  if len(sys.argv) != 3:
-    print("Usage: python3 assmbler.py input.asm output.bin")
-  else:
-    assemble(sys.argv[1],sys.argv[2])
+    assemble(sys.argv[1], sys.argv[2])
