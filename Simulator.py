@@ -58,18 +58,15 @@ def bits(word, hi, lo):
     mask = (1 << (hi - lo + 1)) - 1
     return (word >> lo) & mask
 
-
 def sign_extend(value, width):
     """Sign-extend 'value' from 'width' bits to a full Python int."""
     if value & (1 << (width - 1)):
         value -= (1 << width)
     return value
 
-
 def as_signed(val):
     val = val & 0xFFFFFFFF
     return val - 0x100000000 if val >= 0x80000000 else val
-
 
 def as_unsigned(val):
     return val & 0xFFFFFFFF
@@ -81,13 +78,10 @@ def extract_fields(word):
     rs1    = bits(word, 19, 15)
     rs2    = bits(word, 24, 20)
     funct7 = bits(word, 31, 25)
-
     # I-type immediate
     imm_i = sign_extend(bits(word, 31, 20), 12)
-
     # S-type immediate
     imm_s = sign_extend((bits(word, 31, 25) << 5) | bits(word, 11, 7), 12)
-
     # B-type immediate
     imm_b = sign_extend(
         (bits(word, 31, 31) << 12) |
@@ -96,10 +90,8 @@ def extract_fields(word):
         (bits(word, 11, 8)  << 1),
         13
     )
-
     # U-type immediate
     imm_u = sign_extend(bits(word, 31, 12) << 12, 32)
-
     # J-type immediate
     imm_j = sign_extend(
         (bits(word, 31, 31) << 20) |
@@ -108,16 +100,13 @@ def extract_fields(word):
         (bits(word, 30, 21) << 1),
         21
     )
-
     return {
         "opcode": opcode, "rd": rd, "funct3": funct3,
         "rs1": rs1, "rs2": rs2, "funct7": funct7,
         "imm_i": imm_i, "imm_s": imm_s, "imm_b": imm_b,
         "imm_u": imm_u, "imm_j": imm_j,
     }
-
 class CPU:
-
     def __init__(self):
         self.regs = RegisterFile()
         self.mem  = Memory()
@@ -159,15 +148,13 @@ class CPU:
             B(0b101, self._bge),
             B(0b110, self._bltu),
             B(0b111, self._bgeu),
-        ])
-        
+        ]) 
         self._use_funct7 = {0b0110011}
         self._special = {
             0b0110111: self._lui,
             0b0010111: self._auipc,
             0b1101111: self._jal,
         }
-
     def _add(self, f, pc):
         self.regs.write(f["rd"], as_unsigned(self.regs.read(f["rs1"]) + self.regs.read(f["rs2"])))
         return pc + 4
@@ -282,7 +269,6 @@ class CPU:
         if handler is None:
             print(f"Error: unrecognised instruction (opcode=0b{opcode:07b} funct3={funct3:03b})")
             sys.exit(1)
-
         return handler(f, self.pc)
 
     def format_state(self, pc_to_print):
@@ -297,8 +283,6 @@ class CPU:
         return lines
 
 HALT_WORD = 0x00000063   
-
-
 def load_program(path):
     program = []
     with open(path) as f:
@@ -327,7 +311,6 @@ def main():
             sys.exit(1)
 
         word = program[idx]
-
         if word == HALT_WORD:
             trace_lines.append(cpu.format_state(cpu.pc))
             break
